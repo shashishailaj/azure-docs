@@ -1,55 +1,71 @@
 ---
-title: Subscription requirements for Azure AD Privileged Identity Management  | Microsoft Docs
-description: A topic that explains the subscription and licensing requirements for managing and using Azure AD PIM in your tenant
+title: License requirements to use Privileged Identity Management - Azure Active Directory | Microsoft Docs
+description: Describes the licensing requirements to use Azure AD Privileged Identity Management (PIM).
 services: active-directory
 documentationcenter: ''
-author: barclayn
-manager: mbaldwin
-editor: mwahl
-
+author: curtand
+manager: mtillman
+editor: markwahl-msft
 ms.assetid: 34367721-8b42-4fab-a443-a2e55cdbf33d
 ms.service: active-directory
 ms.workload: identity
 ms.tgt_pltfrm: na
 ms.devlang: na
-ms.topic: article
-ms.date: 12/01/2016
-ms.author: barclayn
+ms.topic: how-to
+ms.subservice: pim
+ms.date: 08/06/2020
+ms.author: curtand
+ms.custom: pim
 
+ms.collection: M365-identity-device-management
 ---
 
-# Azure AD PIM subscription requirements
+# License requirements to use Privileged Identity Management
 
-## In this article
-This article covers the subscription and licensing requirements for managing and using Azure AD PIM in your tenant.  
+To use Azure Active Directory (Azure AD) Privileged Identity Management (PIM), a directory must have a valid license. Furthermore, licenses must be assigned to the administrators and relevant users. This article describes the license requirements to use Privileged Identity Management.
 
-When Azure AD Privileged Identity Management was in preview there were no license checks for a tenant to try the service.  Now that Azure AD PIM has reached general availability, a trial or paid subscription must be present in the tenant to continue using PIM after December 2016.  
-Azure AD Privileged Identity Management is available as part of the Premium P2 edition of Azure Active Directory. (For more information on the other features of P2 and how it compares to Premium P1, see [Azure Active Directory editions](../active-directory-editions.md)
+## Valid licenses
 
-If you're not sure whether your organization has a trial or purchased subscription, then you can check whether there is a subscription in your tenant using the commands included in Azure Active Directory Module for Windows PowerShell V1. 
-1. Open a PowerShell Window
-2. Type `Connect-MsolService` to authenticate as a user in your tenant
-3. Type `Get-MsolSubscription | ft SkuPartNumber,IsTrial,Status`
+[!INCLUDE [Azure AD Premium P2 license](../../../includes/active-directory-p2-license.md)]
 
-This command retrieves a list of the subscriptions in your tenant. If there are no lines returned, you will need to obtain an Azure AD Premium P2 trial, or purchase an Azure AD Premium P2 subscription to use Azure AD PIM.  To get a trial and start using PIM, read the document [Get Started with Azure AD Privileged Identity Management.](../active-directory-privileged-identity-management-getting-started.md)
+## Licenses you must have
 
-If this command returns a line in which the SkuPartNumber is "AAD_PREMIUM_P2" and IsTrial is "True", this indicates an Azure AD Premium P2 trial is present in the tenant.  If the subscription status is not Enabled, and you do not have an Azure AD Premium P2 purchase, then you must purchase an Azure AD Premium P2 subscription to continue using Azure AD PIM.
-Azure AD Premium P2 is available through a [Microsoft Enterprise Agreement](https://www.microsoft.com/en-us/licensing/licensing-programs/enterprise.aspx), the [Open Volume License Program](https://www.microsoft.com/en-us/licensing/licensing-programs/open-license.aspx), and the [Cloud Solution Providers program](https://partner.microsoft.com/en-US/cloud-solution-provider). Azure and Office 365 subscribers can also buy Azure Active Directory Premium P2 online.  More information on Azure AD Premium pricing and to order online can be found at [Azure Active Directory Pricing](https://azure.microsoft.com/en-us/pricing/details/active-directory/).
+Ensure that your directory has at least as many Azure AD Premium P2 licenses as you have employees that will be performing the following tasks:
 
-Azure AD PIM will no longer be available in your tenant if:
-- Your organization was using Azure AD PIM when it was in preview and does not purchase Azure AD Premium P2
-- Your organization had an Azure AD Premium P2 trial that expired
-- Your organization had a purchased subscription that expired
+- Users assigned as eligible to Azure AD or Azure roles managed using PIM
+- Users who are assigned as eligible members or owners of privileged access groups
+- Users able to approve or reject activation requests in PIM
+- Users assigned to an access review
+- Users who perform access reviews
 
-When an Azure AD Premium P2 subscription expires, or an organization which was using Azure AD PIM does not obtain Azure AD Premium P2:
+Azure AD Premium P2 licenses are **not** required for the following tasks:
+
+- No licenses are required for users who set up PIM, configure policies, receive alerts, and set up access reviews.
+
+For more information about licenses, see [Assign or remove licenses using the Azure Active Directory portal](../fundamentals/license-users-groups.md).
+
+## Example license scenarios
+
+Here are some example license scenarios to help you determine the number of licenses you must have.
+
+| Scenario | Calculation | Number of licenses |
+| --- | --- | --- |
+| Woodgrove Bank has 10 administrators for different departments and 2 Global Administrators that configure and manage PIM. They make five administrators eligible. | Five licenses for the administrators who are eligible | 5 |
+| Graphic Design Institute has 25 administrators of which 14 are managed through PIM. Role activation requires approval and there are three different users in the organization who can approve activations. | 14 licenses for the eligible roles + three approvers | 17 |
+| Contoso has 50 administrators of which 42 are managed through PIM. Role activation requires approval and there are five different users in the organization who can approve activations. Contoso also does monthly reviews of users assigned to administrator roles and reviewers are the users’ managers of which six are not in administrator roles managed by PIM. | 42 licenses for the eligible roles + five approvers + six reviewers | 53 |
+
+## When a license expires
+
+If an Azure AD Premium P2, EMS E5, or trial license expires, Privileged Identity Management features will no longer be available in your directory:
 
 - Permanent role assignments to Azure AD roles will be unaffected.
-- The Azure AD PIM extension in the Azure portal, as well as the Graph API Cmdlets and PowerShell interfaces of Azure AD PIM, will no longer be available for users to activate privileged roles, manage privileged access, or perform access reviews of privileged roles.
+- The Privileged Identity Management service in the Azure portal, as well as the Graph API cmdlets and PowerShell interfaces of Privileged Identity Management, will no longer be available for users to activate privileged roles, manage privileged access, or perform access reviews of privileged roles.
 - Eligible role assignments of Azure AD roles will be removed, as users will no longer be able to activate privileged roles.
-- Any ongoing access reviews of Azure AD roles will end, and Azure AD PIM configuration settings will be removed.
-- Azure AD PIM will no longer send emails on role assignment changes.
+- Any ongoing access reviews of Azure AD roles will end, and Privileged Identity Management configuration settings will be removed.
+- Privileged Identity Management will no longer send emails on role assignment changes.
 
-## Next Steps
+## Next steps
 
-- [Get Started with Azure AD Privileged Identity Management.](../active-directory-privileged-identity-management-getting-started.md)
-- [Roles in Azure AD Privileged Identity Management](../active-directory-privileged-identity-management-roles.md)
+- [Deploy Privileged Identity Management](pim-deployment-plan.md)
+- [Start using Privileged Identity Management](pim-getting-started.md)
+- [Roles you can't manage in Privileged Identity Management](pim-roles.md)

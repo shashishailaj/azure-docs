@@ -1,5 +1,5 @@
 ---
-title: StorSimple Device Manager - Log a Support ticket for your Microsoft Azure StorSimple Virtual Array | Microsoft Docs
+title: Log Support ticket via StorSimple Device Manager | Microsoft Docs
 description: Describes the StorSimple Device Manager diagnose capability and explains how to use it to troubleshoot your StorSimple Virtual Array.
 services: storsimple
 documentationcenter: ''
@@ -10,7 +10,7 @@ editor: ''
 ms.assetid: a0c394df-957b-49b3-a283-38824f8847fd
 ms.service: storsimple
 ms.devlang: na
-ms.topic: article
+ms.topic: how-to
 ms.tgt_pltfrm: na
 ms.workload: na
 ms.date: 11/21/2016

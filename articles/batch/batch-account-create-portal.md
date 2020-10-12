@@ -1,120 +1,142 @@
 ---
-title: Create an Azure Batch account | Microsoft Docs
+title: Create an account in the Azure portal
 description: Learn how to create an Azure Batch account in the Azure portal to run large-scale parallel workloads in the cloud
-services: batch
-documentationcenter: ''
-author: mmacy
-manager: timlt
-editor: ''
-
-ms.assetid: 3fbae545-245f-4c66-aee2-e25d7d5d36db
-ms.service: batch
-ms.workload: big-compute
-ms.tgt_pltfrm: na
-ms.devlang: na
-ms.topic: get-started-article
-ms.date: 09/21/2016
-ms.author: marsma
+ms.topic: how-to
+ms.date: 06/10/2020
+ms.custom: H1Hack27Feb2017
 
 ---
-# Create an Azure Batch account using the Azure portal
-> [!div class="op_single_selector"]
-> * [Azure portal](batch-account-create-portal.md)
-> * [Batch Management .NET](batch-management-dotnet.md)
-> 
-> 
 
-Learn how to create an Azure Batch account in the [Azure portal][azure_portal], and where to find important account properties like access keys and account URLs. We also discuss Batch pricing, and linking an Azure Storage account to your Batch account so that you can use [application packages](batch-application-packages.md) and [persist job and task output](batch-task-output.md).
+# Create a Batch account with the Azure portal
+
+This topic shows how to create an Azure Batch account in the [Azure portal](https://portal.azure.com), choosing the account properties that fit your compute scenario. You'll also learn where to find important account properties like access keys and account URLs.
+
+For background about Batch accounts and scenarios, see [Batch service workflow and resources](batch-service-workflow-features.md).
 
 ## Create a Batch account
-1. Sign in to the [Azure portal][azure_portal].
-2. Click **New** > **Compute** > **Batch Service**.
-   
-    ![Batch in the Marketplace][marketplace_portal]
-3. The **New Batch Account** blade is displayed. See items *a* through *e* below for descriptions of each blade element.
-   
+
+[!INCLUDE [batch-account-mode-include](../../includes/batch-account-mode-include.md)]
+
+1. Sign in to the [Azure portal](https://portal.azure.com).
+
+1. Select **Create a resource**, then select **Compute** and **Batch Service**.
+
+1. Enter **New Batch account** settings. See the following details.
+
     ![Create a Batch account][account_portal]
-   
-    a. **Account Name**: A unique name for your Batch account. This name must be unique within the Azure region the account is created (see *Location* below). It may contain only lowercase characters, numbers, and must be 3-24 characters in length.
-   
-    b. **Subscription**: A subscription in which to create the Batch account. If you have only one subscription, it is selected by default.
-   
-    c. **Resource group**: An existing resource group for your new Batch account, or optionally create a new one.
-   
-    d. **Location**: An Azure region in which to create the Batch account. Only the regions supported by your subscription and resource group are displayed as options.
-   
-    e. **Storage Account** (optional): A **General purpose** storage account you associate (link) to your new Batch account. See [Linked Azure Storage account](#linked-azure-storage-account) below for more details.
-4. Click **Create** to create the account.
-   
-   The portal indicates that it is **Deploying** the account, and upon completion, a **Deployments succeeded** notification appears in *Notifications*.
+
+    a. **Subscription**: The subscription in which to create the Batch account. If you have only one subscription, it is selected by default.
+
+    b. **Resource group**: Select an existing resource group for your new Batch account, or optionally create a new one.
+
+    c. **Account name**: The name you choose must be unique within the Azure region where the account is created (see **Location** below). The account name can contain only lowercase characters or numbers, and must be 3-24 characters in length.
+
+    d. **Location**: The Azure region in which to create the Batch account. Only the regions supported by your subscription and resource group are displayed as options.
+
+    e. **Storage account**: An optional Azure Storage account that you associate with your Batch account. A general-purpose v2 storage account is recommended for the best performance. For all storage account options in Batch, see the [Batch feature overview](accounts.md#azure-storage-accounts). In the portal, select an existing storage account, or create a new one.
+
+      ![Create a storage account][storage_account]
+
+    f. **Pool allocation mode**: In the **Advanced** settings tab you can specify pool allocation mode as **Batch service** or **User subscription**. For most scenarios, accept the default **Batch service**.
+
+      ![Batch pool allocation mode][pool_allocation]
+
+1. Select **Create** to create the account.
 
 ## View Batch account properties
-Once the account has been created, you can open the **Batch account blade** to access its settings and properties. You can access all account settings and properties by using the left menu of the Batch account blade.
 
-![Batch account blade in Azure portal][account_blade]
+Once the account has been created, select the account to access its settings and properties. You can access all account settings and properties by using the left menu.
 
-* **Batch account URL**: Applications you create with the [Batch development APIs](batch-technical-overview.md#batch-development-apis) need an account URL to manage resources and run jobs in the account. A Batch account URL has the following format:
-  
-    `https://<account_name>.<region>.batch.azure.com`
+> [!NOTE]
+> The name of the Batch account is its ID and can't be changed. If you need to change the name of a Batch account, you'll need to delete the account and create a new one with the intended name.
 
-![Batch account URL in portal][account_url]
+![Batch account page in Azure portal][account_blade]
 
-* **Access keys**: Your applications also need an access key when working with resources in your Batch account. To view or regenerate your Batch account's access keys, enter `keys` in the left menu **Search** box on the Batch account blade, then select **Keys**.
-  
+* **Batch account name, URL, and keys**: When you develop an application with the [Batch APIs](batch-apis-tools.md#azure-accounts-for-batch-development), you need an account URL and key to access your Batch resources. (Batch also supports Azure Active Directory authentication.)
+
+    To view the Batch account access information, select **Keys**.
+
     ![Batch account keys in Azure portal][account_keys]
 
-## Pricing
-Batch accounts are offered only in a "Free Tier," which means you aren't charged for the Batch account itself. You are charged for the underlying Azure compute resources that your Batch solutions consume, and for the resources consumed by other services when your workloads run. For example, you are charged for the compute nodes in your pools and for the data you store in Azure Storage as input or output for your tasks. Similarly, if you use the [application packages](batch-application-packages.md) feature of Batch, you are charged for the Azure Storage resources used for storing your application packages. See [Batch pricing][batch_pricing] for more information.
+* To view the name and keys of the storage account associated with your Batch account, select **Storage account**.
 
-## Linked Azure Storage account
-As mentioned earlier, you can (optionally) link a **General purpose** Storage account to your Batch account. The [application packages](batch-application-packages.md) feature of Batch uses blob storage in a linked General purpose Storage account, as does the [Batch File Conventions .NET](batch-task-output.md) library. These optional features assist you in deploying the applications your Batch tasks run, and persisting the data they produce.
+* To view the resource quotas that apply to the Batch account, select  **Quotas**. For details, see [Batch service quotas and limits](batch-quota-limit.md).
 
-Batch currently supports *only* the **General purpose** storage account type as described in step 5, [Create a storage account](../storage/storage-create-storage-account.md#create-a-storage-account), in [About Azure storage accounts](../storage/storage-create-storage-account.md). When you link an Azure Storage account to your Batch account, be sure link *only* a **General purpose** storage account.
+## Additional configuration for user subscription mode
 
-![Creating a "General purpose" storage account][storage_account]
+If you choose to create a Batch account in user subscription mode, perform the following additional steps before creating the account.
 
-We recommend that you create a Storage account for exclusive use by your Batch account.
+### Allow Azure Batch to access the subscription (one-time operation)
 
-> [!WARNING]
-> Take care when regenerating the access keys of a linked Storage account. Regenerate only one Storage account key and click **Sync Keys** on the linked Storage account blade. Wait five minutes to allow the keys to propagate to the compute nodes in your pools, then regenerate and synchronize the other key if necessary. If you regenerate both keys at the same time, your compute nodes will not be able to synchronize either key, and they will lose access to the Storage account.
-> 
-> 
+When creating your first Batch account in user subscription mode, you need to register your subscription with Batch. (If you already did this, skip to the next section.)
 
-  ![Regenerating storage account keys][4]
+1. Sign in to the [Azure portal](https://portal.azure.com).
 
-## Batch service quotas and limits
-Please be aware that as with your Azure subscription and other Azure services, certain [quotas and limits](batch-quota-limit.md) apply to Batch accounts. Current quotas for a Batch account appear in the portal in the account **Properties**.
+1. Select **All services** > **Subscriptions**, and select the subscription you want to use for the Batch account.
 
-![Batch account quotas in Azure portal][quotas]
+1. In the **Subscription** page, select **Resource providers**, and search for **Microsoft.Batch**. Check that the **Microsoft.Batch** resource provider is registered in the subscription. If it isn't registered, select the **Register** link.
 
-Keep these quotas in mind as you are designing and scaling up your Batch workloads. For example, if your pool isn't reaching the target number of compute nodes you've specified, you might have reached the core quota limit for your Batch account.
+    ![Register Microsoft.Batch provider][register_provider]
 
-Also note that you are not restricted to a single Batch account for your Azure subscription. You can run multiple Batch workloads in a single Batch account, or distribute your workloads among Batch accounts in the same subscription, but in different Azure regions.
+1. In the **Subscription** page, select **Access control (IAM)** > **Role assignments** > **Add role assignment**.
 
-Many of these quotas can be increased simply with a free product support request submitted in the Azure portal. See [Quotas and limits for the Azure Batch service](batch-quota-limit.md) for details on requesting quota increases.
+    ![Subscription access control][subscription_access]
+
+1. On the **Add role assignment** page, select the **Contributor** or **Owner** role, then search for the Batch API. Search for each of these strings until you find the API:
+    1. **MicrosoftAzureBatch**.
+    1. **Microsoft Azure Batch**. Newer Azure AD tenants may use this name.
+    1. **ddbf3205-c6bd-46ae-8127-60eb93363864** is the ID for the Batch API.
+
+1. Once you find the Batch API, select it and select **Save**.
+
+    ![Add Batch permissions][add_permission]
+
+### Create a Key Vault
+
+In user subscription mode, an [Azure Key Vault](../key-vault/general/overview.md) is required. The Key Vault must be in the same subscription and region as the Batch account to be created. 
+
+1. In the [Azure portal](https://portal.azure.com), select **New** > **Security** > **Key Vault**.
+
+1. In the **Create Key Vault** page, enter a name for the Key Vault, and create a resource group in the region you want for your Batch account. Leave the remaining settings at default values, then select **Create**.
+
+When creating the Batch account in user subscription mode, specify **User subscription** as the pool allocation mode, select the Key Vault, and check the box to grant Azure Batch access to the Key Vault.
+
+If you prefer to grant access to the Key Vault manually, go to the **Access policies** section of the Key Vault, select **Add Access Policy** and search for **Microsoft Azure Batch**. Once selected, you will need to configure the **Secret permissions** using the drop-down menu. Azure Batch must be given a minimum of **Get**, **List**, **Set**, and **Delete** permissions.
+
+![Secret permissions for Azure Batch](./media/batch-account-create-portal/secret-permissions.png)
+
+> [!NOTE]
+> Ensure that the **Azure Virtual Machines for deployment** and **Azure Resource Manager for template deployment** check boxes are selected under **Access policies** for the linked **Key Vault** resource.
+>
+> ![Mandatory Key Vault Access Policy](./media/batch-account-create-portal/key-vault-access-policy.png)
+
+### Configure subscription quotas
+
+For user subscription Batch accounts, core quotas must be set manually. Standard Batch core quotas do not apply to accounts in user subscription mode.
+
+1. In the [Azure portal](https://portal.azure.com), select your user subscription mode Batch account to display its settings and properties.
+1. From the left menu, select **Quotas** to view and configure the core quotas associated with your Batch account.
+
+For more information about user subscription mode core quotas, see [Batch service quotas and limits](batch-quota-limit.md).
 
 ## Other Batch account management options
-In addition to using the Azure portal, you can also create and manage Batch accounts with the following:
+
+In addition to using the Azure portal, you can create and manage Batch accounts with tools including the following:
 
 * [Batch PowerShell cmdlets](batch-powershell-cmdlets-get-started.md)
-* [Azure CLI](../xplat-cli-install.md)
+* [Azure CLI](batch-cli-get-started.md)
 * [Batch Management .NET](batch-management-dotnet.md)
 
 ## Next steps
-* See the [Azure Batch feature overview](batch-api-basics.md) to learn more about Batch service concepts and features. The article discusses the primary Batch resources such as pools, compute nodes, jobs, and tasks, and provides an overview of the service's features that enable large-scale compute workload execution.
-* Learn the basics of developing a Batch-enabled application using the [Batch .NET client library](batch-dotnet-get-started.md). The [introductory article](batch-dotnet-get-started.md) guides you through a working application that uses the Batch service to execute a workload on multiple compute nodes, and includes using Azure Storage for workload file staging and retrieval.
 
-[api_net]: https://msdn.microsoft.com/library/azure/mt348682.aspx
-[api_rest]: https://msdn.microsoft.com/library/azure/Dn820158.aspx
+* Learn about the [Batch service workflow and primary resources](batch-service-workflow-features.md) such as pools, nodes, jobs, and tasks.
+* Learn the basics of developing a Batch-enabled application using the [Batch .NET client library](quick-run-dotnet.md) or [Python](quick-run-python.md). These quickstarts guide you through a sample application that uses the Batch service to execute a workload on multiple compute nodes, and includes using Azure Storage for workload file staging and retrieval.
 
-[azure_portal]: https://portal.azure.com
-[batch_pricing]: https://azure.microsoft.com/pricing/details/batch/
-
-[4]: ./media/batch-account-create-portal/batch_acct_04.png "Regenerating storage account keys"
-[marketplace_portal]: ./media/batch-account-create-portal/marketplace_batch.PNG
 [account_blade]: ./media/batch-account-create-portal/batch_blade.png
-[account_portal]: ./media/batch-account-create-portal/batch_acct_portal.png
-[account_keys]: ./media/batch-account-create-portal/account_keys.PNG
-[account_url]: ./media/batch-account-create-portal/account_url.png
+[account_portal]: ./media/batch-account-create-portal/batch-account-portal.png
+[pool_allocation]: ./media/batch-account-create-portal/batch-pool-allocation.png
+[account_keys]: ./media/batch-account-create-portal/batch-account-keys.png
 [storage_account]: ./media/batch-account-create-portal/storage_account.png
-[quotas]: ./media/batch-account-create-portal/quotas.png
+[subscription_access]: ./media/batch-account-create-portal/subscription_iam.png
+[add_permission]: ./media/batch-account-create-portal/add_permission.png
+[register_provider]: ./media/batch-account-create-portal/register_provider.png

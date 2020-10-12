@@ -1,4 +1,10 @@
-<!--author=SharS last changed: 9/17/15-->
+---
+author: alkohli
+ms.service: storsimple
+ms.topic: include
+ms.date: 10/26/2018
+ms.author: alkohli
+---
 
 #### To install regular hotfixes via Windows PowerShell for StorSimple
 1. Connect to the device serial console. For more information, see [Step 1: Connect to the serial console](../articles/storsimple/storsimple-update-device.md#step1).
@@ -9,7 +15,7 @@
     Start-HcsHotfix
     ```
    
-    > !IMPORTANT]
+    > [!IMPORTANT]
     >
     > This command applies only to regular hotfixes. You run this command on only one controller, but both controllers will be updated.
     > You may notice a controller failover during the update process; however, the failover will not affect system availability or operation.

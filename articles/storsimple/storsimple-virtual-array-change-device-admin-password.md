@@ -1,22 +1,23 @@
 ---
-title: Change the Microsoft Azure StorSimple Virtual Array device admin password | Microsoft Docs
+title: Change StorSimple Virtual Array device admin password | Microsoft Docs
 description: Describes how to use either the Azure portal or StorSimple Virtual Array web UI to change the device administrator password.
 services: storsimple
 documentationcenter: NA
 author: alkohli
-manager: carmonm
+manager: timlt
 editor: ''
 
 ms.assetid: 11490814-d9fd-4dc7-9c3b-55dd2c23eaf1
 ms.service: storsimple
 ms.devlang: NA
-ms.topic: article
+ms.topic: how-to
 ms.tgt_pltfrm: NA
 ms.workload: TBD
-ms.date: 11/21/2016
+ms.date: 02/27/2017
 ms.author: alkohli
+ms.custom: H1Hack27Feb2017
 ---
-# Change the StorSimple Virtual Array device administrator password
+# Change the StorSimple Virtual Array device administrator password via StorSimple Device Manager
 
 ## Overview
 

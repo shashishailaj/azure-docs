@@ -1,37 +1,25 @@
----
-title: Create and configure an application gateway with an internal load balancer (ILB) by using Azure Resource Manager | Microsoft Docs
+﻿---
+title: Use with Internal Load Balancer - Azure Application Gateway
 description: This page provides instructions to create, configure, start, and delete an Azure application gateway with internal load balancer (ILB) for Azure Resource Manager
-documentationcenter: na
 services: application-gateway
-author: georgewallace
-manager: carmonm
-editor: tysonn
-
-ms.assetid: 75cfd5a2-e378-4365-99ee-a2b2abda2e0d
+author: vhorne
 ms.service: application-gateway
-ms.devlang: na
-ms.topic: article
-ms.tgt_pltfrm: na
-ms.workload: infrastructure-services
-ms.date: 11/16/2016
-ms.author: gwallace
-
+ms.topic: how-to
+ms.date: 11/13/2019
+ms.author: victorh
 ---
-# Create an application gateway with an internal load balancer (ILB) by using Azure Resource Manager
 
-> [!div class="op_single_selector"]
-> * [Azure Classic PowerShell](application-gateway-ilb.md)
-> * [Azure Resource Manager PowerShell](application-gateway-ilb-arm.md)
-> 
-> 
+# Create an application gateway with an internal load balancer (ILB)
 
-Azure Application Gateway can be configured with an Internet-facing VIP or with an internal endpoint that is not exposed to the Internet, also known as an internal load balancer (ILB) endpoint. Configuring the gateway with an ILB is useful for internal line-of-business applications that are not exposed to the Internet. It's also useful for services and tiers within a multi-tier application that sit in a security boundary that is not exposed to the Internet but still require round-robin load distribution, session stickiness, or Secure Sockets Layer (SSL) termination.
+Azure Application Gateway can be configured with an Internet-facing VIP or with an internal endpoint that is not exposed to the Internet, also known as an internal load balancer (ILB) endpoint. Configuring the gateway with an ILB is useful for internal line-of-business applications that are not exposed to the Internet. It's also useful for services and tiers within a multi-tier application that sit in a security boundary that is not exposed to the Internet but still require round-robin load distribution, session stickiness, or Transport Layer Security (TLS), previously known as Secure Sockets Layer (SSL), termination.
 
 This article walks you through the steps to configure an application gateway with an ILB.
 
 ## Before you begin
 
-1. Install the latest version of the Azure PowerShell cmdlets by using the Web Platform Installer. You can download and install the latest version from the **Windows PowerShell** section of the [Downloads page](https://azure.microsoft.com/downloads/).
+[!INCLUDE [updated-for-az](../../includes/updated-for-az.md)]
+
+1. Install the latest version of the Azure PowerShell module by following the [install instructions](/powershell/azure/install-az-ps).
 2. You create a virtual network and a subnet for Application Gateway. Make sure that no virtual machines or cloud deployments are using the subnet. Application Gateway must be by itself in a virtual network subnet.
 3. The servers that you configure to use the application gateway must exist or have their endpoints created either in the virtual network or with a public IP/VIP assigned.
 
@@ -62,7 +50,7 @@ Make sure that you switch PowerShell mode to use the Azure Resource Manager cmdl
 ### Step 1
 
 ```powershell
-Login-AzureRmAccount
+Connect-AzAccount
 ```
 
 ### Step 2
@@ -70,17 +58,17 @@ Login-AzureRmAccount
 Check the subscriptions for the account.
 
 ```powershell
-Get-AzureRmSubscription
+Get-AzSubscription
 ```
 
-You are prompted to authenticate with your credentials.<BR>
+You are prompted to authenticate with your credentials.
 
 ### Step 3
 
-Choose which of your Azure subscriptions to use. <BR>
+Choose which of your Azure subscriptions to use.
 
 ```powershell
-Select-AzureRmSubscription -Subscriptionid "GUID of subscription"
+Select-AzSubscription -Subscriptionid "GUID of subscription"
 ```
 
 ### Step 4
@@ -88,12 +76,12 @@ Select-AzureRmSubscription -Subscriptionid "GUID of subscription"
 Create a new resource group (skip this step if you're using an existing resource group).
 
 ```powershell
-New-AzureRmResourceGroup -Name appgw-rg -location "West US"
+New-AzResourceGroup -Name appgw-rg -location "West US"
 ```
 
 Azure Resource Manager requires that all resource groups specify a location. This is used as the default location for resources in that resource group. Make sure that all commands to create an application gateway uses the same resource group.
 
-In the example above, we created a resource group called "appgw-rg" and location "West US".
+In the preceding example, we created a resource group called "appgw-rg" and location "West US".
 
 ## Create a virtual network and a subnet for the application gateway
 
@@ -102,18 +90,18 @@ The following example shows how to create a virtual network by using Resource Ma
 ### Step 1
 
 ```powershell
-$subnetconfig = New-AzureRmVirtualNetworkSubnetConfig -Name subnet01 -AddressPrefix 10.0.0.0/24
+$subnetconfig = New-AzVirtualNetworkSubnetConfig -Name subnet01 -AddressPrefix 10.0.0.0/24
 ```
 
-This assigns the address range 10.0.0.0/24 to a subnet variable to be used to create a virtual network.
+This step assigns the address range 10.0.0.0/24 to a subnet variable to be used to create a virtual network.
 
 ### Step 2
 
 ```powershell
-$vnet = New-AzureRmVirtualNetwork -Name appgwvnet -ResourceGroupName appgw-rg -Location "West US" -AddressPrefix 10.0.0.0/16 -Subnet $subnetconfig
+$vnet = New-AzVirtualNetwork -Name appgwvnet -ResourceGroupName appgw-rg -Location "West US" -AddressPrefix 10.0.0.0/16 -Subnet $subnetconfig
 ```
 
-This creates a virtual network named "appgwvnet" in resource group "appgw-rg" for the West US region using the prefix 10.0.0.0/16 with subnet 10.0.0.0/24.
+This step creates a virtual network named "appgwvnet" in resource group "appgw-rg" for the West US region using the prefix 10.0.0.0/16 with subnet 10.0.0.0/24.
 
 ### Step 3
 
@@ -121,96 +109,93 @@ This creates a virtual network named "appgwvnet" in resource group "appgw-rg" fo
 $subnet = $vnet.subnets[0]
 ```
 
-This assigns the subnet object to variable $subnet for the next steps.
+This step assigns the subnet object to variable $subnet for the next steps.
 
-## Create an application gateway configuration objec
+## Create an application gateway configuration object
 
 ### Step 1
 
 ```powershell
-$gipconfig = New-AzureRmApplicationGatewayIPConfiguration -Name gatewayIP01 -Subnet $subnet
+$gipconfig = New-AzApplicationGatewayIPConfiguration -Name gatewayIP01 -Subnet $subnet
 ```
 
-This creates an application gateway IP configuration named "gatewayIP01". When Application Gateway starts, it picks up an IP address from the subnet configured and route network traffic to the IP addresses in the back-end IP pool. Keep in mind that each instance takes one IP address.
+This step creates an application gateway IP configuration named "gatewayIP01". When Application Gateway starts, it picks up an IP address from the subnet configured and route network traffic to the IP addresses in the back-end IP pool. Keep in mind that each instance takes one IP address.
 
 ### Step 2
 
 ```powershell
-$pool = New-AzureRmApplicationGatewayBackendAddressPool -Name pool01 -BackendIPAddresses 134.170.185.46, 134.170.188.221,134.170.185.50
+$pool = New-AzApplicationGatewayBackendAddressPool -Name pool01 -BackendIPAddresses 10.1.1.8,10.1.1.9,10.1.1.10
 ```
 
-This configures the back-end IP address pool named "pool01" with IP addresses "134.170.185.46, 134.170.188.221,134.170.185.50". Those are the IP addresses that receive the network traffic that comes from the front-end IP endpoint. You replace the IP addresses above to add your own application IP address endpoints.
+This step configures the back-end IP address pool named "pool01" with IP addresses "10.1.1.8, 10.1.1.9, 10.1.1.10". Those are the IP addresses that receive the network traffic that comes from the front-end IP endpoint. You replace the preceding IP addresses to add your own application IP address endpoints.
 
 ### Step 3
 
 ```powershell
-$poolSetting = New-AzureRmApplicationGatewayBackendHttpSettings -Name poolsetting01 -Port 80 -Protocol Http -CookieBasedAffinity Disabled
+$poolSetting = New-AzApplicationGatewayBackendHttpSettings -Name poolsetting01 -Port 80 -Protocol Http -CookieBasedAffinity Disabled
 ```
 
-This configures application gateway setting "poolsetting01" for the load balanced network traffic in the back-end pool.
+This step configures application gateway setting "poolsetting01" for the load balanced network traffic in the back-end pool.
 
 ### Step 4
 
 ```powershell
-$fp = New-AzureRmApplicationGatewayFrontendPort -Name frontendport01  -Port 80
+$fp = New-AzApplicationGatewayFrontendPort -Name frontendport01  -Port 80
 ```
 
-This configures the front-end IP port named "frontendport01" for the ILB.
+This step configures the front-end IP port named "frontendport01" for the ILB.
 
 ### Step 5
 
 ```powershell
-$fipconfig = New-AzureRmApplicationGatewayFrontendIPConfig -Name fipconfig01 -Subnet $subnet
+$fipconfig = New-AzApplicationGatewayFrontendIPConfig -Name fipconfig01 -Subnet $subnet
 ```
 
-This creates the front-end IP configuration called "fipconfig01" and associates it with a private IP from the current virtual network subnet.
+This step creates the front-end IP configuration called "fipconfig01" and associates it with a private IP from the current virtual network subnet.
 
 ### Step 6
 
 ```powershell
-$listener = New-AzureRmApplicationGatewayHttpListener -Name listener01  -Protocol Http -FrontendIPConfiguration $fipconfig -FrontendPort $fp
+$listener = New-AzApplicationGatewayHttpListener -Name listener01  -Protocol Http -FrontendIPConfiguration $fipconfig -FrontendPort $fp
 ```
 
-This creates the listener called "listener01" and associates the front-end port to the front-end IP configuration.
+This step creates the listener called "listener01" and associates the front-end port to the front-end IP configuration.
 
 ### Step 7
 
 ```powershell
-$rule = New-AzureRmApplicationGatewayRequestRoutingRule -Name rule01 -RuleType Basic -BackendHttpSettings $poolSetting -HttpListener $listener -BackendAddressPool $pool
+$rule = New-AzApplicationGatewayRequestRoutingRule -Name rule01 -RuleType Basic -BackendHttpSettings $poolSetting -HttpListener $listener -BackendAddressPool $pool
 ```
 
-This creates the load balancer routing rule called "rule01" that configures the load balancer behavior.
+This step creates the load balancer routing rule called "rule01" that configures the load balancer behavior.
 
 ### Step 8
 
 ```powershell
-$sku = New-AzureRmApplicationGatewaySku -Name Standard_Small -Tier Standard -Capacity 2
+$sku = New-AzApplicationGatewaySku -Name Standard_Small -Tier Standard -Capacity 2
 ```
 
-This configures the instance size of the application gateway.
+This step configures the instance size of the application gateway.
 
 > [!NOTE]
-> The default value for *InstanceCount* is 2, with a maximum value of 10. The default value for *GatewaySize* is Medium. You can choose between Standard_Small, Standard_Medium, and Standard_Large.
-> 
-> 
+> The default value for Capacity is 2. For Sku Name, you can choose between Standard_Small, Standard_Medium, and Standard_Large.
 
 ## Create an application gateway by using New-AzureApplicationGateway
 
-Creates an application gateway with all configuration items from the steps above. In this example, the application gateway is called "appgwtest".
-
+Creates an application gateway with all configuration items from the preceding steps. In this example, the application gateway is called "appgwtest".
 
 ```powershell
-$appgw = New-AzureRmApplicationGateway -Name appgwtest -ResourceGroupName appgw-rg -Location "West US" -BackendAddressPools $pool -BackendHttpSettingsCollection $poolSetting -FrontendIpConfigurations $fipconfig  -GatewayIpConfigurations $gipconfig -FrontendPorts $fp -HttpListeners $listener -RequestRoutingRules $rule -Sku $sku
+$appgw = New-AzApplicationGateway -Name appgwtest -ResourceGroupName appgw-rg -Location "West US" -BackendAddressPools $pool -BackendHttpSettingsCollection $poolSetting -FrontendIpConfigurations $fipconfig  -GatewayIpConfigurations $gipconfig -FrontendPorts $fp -HttpListeners $listener -RequestRoutingRules $rule -Sku $sku
 ```
 
-This creates an application gateway with all configuration items from the steps above. In the example, the application gateway is called "appgwtest".
+This step creates an application gateway with all configuration items from the preceding steps. In the example, the application gateway is called "appgwtest".
 
 ## Delete an application gateway
 
-To delete an application gateway, you'll need to do the following in order:
+To delete an application gateway, you need to do the following steps in order:
 
-1. Use the `Stop-AzureRmApplicationGateway` cmdlet to stop the gateway.
-2. Use the `Remove-AzureRmApplicationGateway` cmdlet to remove the gateway.
+1. Use the `Stop-AzApplicationGateway` cmdlet to stop the gateway.
+2. Use the `Remove-AzApplicationGateway` cmdlet to remove the gateway.
 3. Verify that the gateway has been removed by using the `Get-AzureApplicationGateway` cmdlet.
 
 ### Step 1
@@ -218,15 +203,15 @@ To delete an application gateway, you'll need to do the following in order:
 Get the application gateway object and associate it to a variable "$getgw".
 
 ```powershell
-$getgw =  Get-AzureRmApplicationGateway -Name appgwtest -ResourceGroupName appgw-rg
+$getgw =  Get-AzApplicationGateway -Name appgwtest -ResourceGroupName appgw-rg
 ```
 
 ### Step 2
 
-Use `Stop-AzureRmApplicationGateway` to stop the application gateway. This sample shows the `Stop-AzureRmApplicationGateway` cmdlet on the first line, followed by the output.
+Use `Stop-AzApplicationGateway` to stop the application gateway. This sample shows the `Stop-AzApplicationGateway` cmdlet on the first line, followed by the output.
 
 ```powershell
-Stop-AzureRmApplicationGateway -ApplicationGateway $getgw  
+Stop-AzApplicationGateway -ApplicationGateway $getgw  
 ```
 
 ```
@@ -237,10 +222,10 @@ Name       HTTP Status Code     Operation ID                             Error
 Successful OK                   ce6c6c95-77b4-2118-9d65-e29defadffb8
 ```
 
-Once the application gateway is in a stopped state, use the `Remove-AzureRmApplicationGateway` cmdlet to remove the service.
+Once the application gateway is in a stopped state, use the `Remove-AzApplicationGateway` cmdlet to remove the service.
 
 ```powershell
-Remove-AzureRmApplicationGateway -Name appgwtest -ResourceGroupName appgw-rg -Force
+Remove-AzApplicationGateway -Name appgwtest -ResourceGroupName appgw-rg -Force
 ```
 
 ```
@@ -253,13 +238,11 @@ Successful OK                   055f3a96-8681-2094-a304-8d9a11ad8301
 
 > [!NOTE]
 > The **-force** switch can be used to suppress the remove confirmation message.
-> 
-> 
 
-To verify that the service has been removed, you can use the `Get-AzureRmApplicationGateway` cmdlet. This step is not required.
+To verify that the service has been removed, you can use the `Get-AzApplicationGateway` cmdlet. This step is not required.
 
 ```powershell
-Get-AzureRmApplicationGateway -Name appgwtest -ResourceGroupName appgw-rg
+Get-AzApplicationGateway -Name appgwtest -ResourceGroupName appgw-rg
 ```
 
 ```
@@ -271,8 +254,6 @@ Get-AzureApplicationGateway : ResourceNotFound: The gateway does not exist.
 ## Next steps
 
 If you want to configure SSL offload, see [Configure an application gateway for SSL offload](application-gateway-ssl.md).
-
-If you want to configure an application gateway to use with an ILB, see [Create an application gateway with an internal load balancer (ILB)](application-gateway-ilb.md).
 
 If you want more information about load balancing options in general, see:
 
